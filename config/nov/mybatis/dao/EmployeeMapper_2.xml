@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nov.mybatis.dao.EmployeeMapper_2">
+
+	<resultMap type="nov.mybatis.bean.Employee_2" id="MyDifEmp">
+	<!-- 自定义结果集 -->
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <result column="dept_id" property="dept.id"/>
+        <result column="dept_name" property="dept.deptName"/>
+    </resultMap>
+    
+    <resultMap type="nov.mybatis.bean.Employee_2" id="MyDifEmp_2">
+    <!-- association  -->
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <association property="dept" javaType="nov.mybatis.bean.Department">
+        	<id column="dept_id" property="id"/>
+        	<result column="dept_name" property="deptName"/>
+        </association>
+        
+    </resultMap>   
+    
+    <resultMap type="nov.mybatis.bean.Employee_2" id="step">
+    <!-- association 分步查询 -->
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <result column="d_id" property="dId"/>
+        <association property="dept" 
+         select="nov.mybatis.dao.DepartmentMapper.getDeptById"
+         column="d_id">
+        	
+        </association>
+        
+    </resultMap>   
+    
+	    <select id="getEmpByIdStep" resultMap="step">
+	    <!-- public Employee_2 getEmpByIdStep(Integer id); -->
+	    	select * from mybatis where id=#{id}
+	    </select>
+	    
+	    <select id="getEmpAndDept" resultMap="MyDifEmp_2">
+		   	SELECT m.id,m.`name`,m.gender,m.email,d.dept_id,d.dept_name
+			FROM mybatis as m,dept as d
+			WHERE m.d_id = d.dept_id AND id=#{id}
+	    </select>
+	
+		<select id="getEmpsByDeptId" resultType="nov.mybatis.bean.Employee_2">
+			select * from mybatis where d_id = #{deptid}
+		</select><!--fun8  -->
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="nov.mybatis.dao.DepartmentMapper">
+	<!--public Department getDeptById(Integer id);  -->
+	<resultMap type="nov.mybatis.bean.Department" id="Mydept">
+		<id column="dept_id" property="id"/>
+		<result column="dept_name" property="deptName"/>
+	</resultMap>
+	
+	<resultMap type="nov.mybatis.bean.Department" id="emps">
+	<!-- private Integer id;
+		private String deptName;
+		private List<Employee_2> emps; -->
+		<id column="dept_id" property="id"/>
+		<result column="dept_name" property="deptName"/>
+		<collection property="emps" ofType="nov.mybatis.bean.Employee_2">
+			<id column="id" property="id"/>
+	        <result column="name" property="name"/>
+	        <result column="gender" property="gender"/>
+	        <result column="email" property="email"/>
+		</collection>
+	</resultMap>
+	
+	<resultMap type="nov.mybatis.bean.Department" id="MyDeptStep">
+	<!-- collection分步查询    -->
+		<id column="dept_id" property="id"/>
+		<result column="dept_name" property="deptName"/>
+		<collection property="emps" 
+			select="nov.mybatis.dao.EmployeeMapper_2.getEmpsByDeptId"
+			column="dept_id">
+		</collection>
+	</resultMap>
+	
+		<select id="getDeptByIdPlus" resultMap="emps">
+		<!-- public Department getDeptByIdPlus(Integer id); -->
+			SELECT m.id,m.`name`,m.gender,m.email,d.dept_id,d.dept_name
+			FROM mybatis as m,dept as d
+			WHERE m.d_id = d.dept_id AND d.dept_id=#{id}
+		</select>
+		
+	 	<select id="getDeptById" resultMap="Mydept">
+	 		select * from dept where dept_id = #{id}
+	 	</select>
+	 	
+	 	<select id="getDeptByIdStep" resultMap="MyDeptStep">
+	 		select dept_id,dept_name from dept where dept_id = #{id}
+	 	</select>
+	 
+ </mapper>
